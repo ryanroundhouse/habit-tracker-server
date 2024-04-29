@@ -1,24 +1,29 @@
 const express = require('express');
 const Response = require('../models/response');
+const authenticate = require('../authenticate');
 const router = express.Router();
 
-router.post('/responses', async (req, res) => {
+router.post('/responses', authenticate, async (req, res) => {
+    const { questionId, userId, response } = req.body;
     try {
-        const { questionId, userId, response } = req.body;
         const responseEntry = await Response.add(questionId, userId, response);
         res.status(201).send(responseEntry);
     } catch (error) {
-        res.status(400).send({ error: 'Failed to add response' });
+        res.status(500).send({ error: 'Server error while adding response.' });
     }
 });
 
-router.get('/responses/:questionId', async (req, res) => {
+router.get('/responses/:questionId', authenticate, async (req, res) => {
+    const { startDate, endDate } = req.query;
     try {
-        const { startDate, endDate } = req.query;
         const responses = await Response.findByQuestionAndDateRange(req.params.questionId, startDate, endDate);
-        res.send(responses);
+        if (responses.length === 0) {
+            res.status(404).send({ error: 'No responses found for this question within the specified date range.' });
+        } else {
+            res.send(responses);
+        }
     } catch (error) {
-        res.status(500).send({ error: 'Failed to retrieve responses' });
+        res.status(500).send({ error: 'Server error while retrieving responses.' });
     }
 });
 

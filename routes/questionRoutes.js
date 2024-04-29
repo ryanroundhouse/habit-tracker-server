@@ -1,36 +1,38 @@
 const express = require('express');
 const Question = require('../models/question');
+const authenticate = require('../authenticate');
 const router = express.Router();
 
-router.post('/questions', async (req, res) => {
+router.post('/questions', authenticate, async (req, res) => {
+    const { userId, questionText, options } = req.body;
     try {
-        const { userId, questionText, options } = req.body;
         const question = await Question.create(userId, questionText, options);
         res.status(201).send(question);
     } catch (error) {
-        res.status(400).send({ error: 'Failed to create question' });
+        res.status(500).send({ error: 'Server error while creating question.' });
     }
 });
 
-router.get('/questions/:questionId', async (req, res) => {
+router.get('/questions/:questionId', authenticate, async (req, res) => {
     try {
         const question = await Question.findById(req.params.questionId);
         if (!question) {
-            return res.status(404).send('Question not found');
+            res.status(404).send({ error: 'Question not found.' });
+        } else {
+            res.send(question);
         }
-        res.send(question);
     } catch (error) {
-        res.status(500).send({ error: 'Failed to retrieve question' });
+        res.status(500).send({ error: 'Server error while retrieving question.' });
     }
 });
 
-router.put('/questions/:questionId', async (req, res) => {
+router.put('/questions/:questionId', authenticate, async (req, res) => {
+    const { questionText, options } = req.body;
     try {
-        const { questionText, options } = req.body;
         await Question.update(req.params.questionId, questionText, options);
-        res.send({ message: 'Question updated' });
+        res.send({ message: 'Question successfully updated.' });
     } catch (error) {
-        res.status(500).send({ error: 'Failed to update question' });
+        res.status(500).send({ error: 'Server error while updating question.' });
     }
 });
 
