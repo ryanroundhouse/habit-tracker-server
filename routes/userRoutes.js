@@ -27,7 +27,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.post('/users', authenticate, async (req, res) => {
+router.post('/users', async (req, res) => {
     const { email, password } = req.body;
     try {
         const user = await User.create(email, password);
@@ -42,6 +42,10 @@ router.post('/users', authenticate, async (req, res) => {
 });
 
 router.get('/users/:userId', authenticate, async (req, res) => {
+    if (req.params.userId !== req.user.userId) {
+        return res.status(403).send({ error: 'Access denied. You can only access your own data.' });
+    }
+
     try {
         const user = await User.findById(req.params.userId);
         if (!user) {
@@ -54,6 +58,10 @@ router.get('/users/:userId', authenticate, async (req, res) => {
 });
 
 router.put('/users/:userId', authenticate, async (req, res) => {
+    if (req.params.userId !== req.user.userId) {
+        return res.status(403).send({ error: 'Access denied. You can only update your own data.' });
+    }
+
     try {
         const { email, password } = req.body;
         await User.update(req.params.userId, email, password);

@@ -23,6 +23,17 @@ class Question {
             await db.query(`INSERT INTO question_options (option_id, question_id, option_text) VALUES (?, ?, ?)`, [Date.now().toString(), questionId, option]);
         }
     }
+
+    static async findAllByUserId(userId) {
+        const questions = await db.query(`SELECT * FROM questions WHERE user_id = ?`, [userId]);
+        const allQuestions = [];
+
+        for (const question of questions) {
+            const options = await db.query(`SELECT option_text FROM question_options WHERE question_id = ?`, [question.question_id]);
+            allQuestions.push({ ...question, options: options.map(opt => opt.option_text) });
+        }
+        return allQuestions;
+    }
 }
 
 module.exports = Question;
