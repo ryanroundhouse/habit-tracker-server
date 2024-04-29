@@ -1,0 +1,380 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Question and Response API",
+      "description": "API to manage users, questions, and their responses.",
+      "version": "1.0.0"
+    },
+    "servers": [
+      {
+        "url": "http://localhost:3000",
+        "description": "Local server"
+      }
+    ],
+    "paths": {
+      "/users": {
+        "post": {
+          "summary": "Add a user",
+          "operationId": "addUser",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string",
+                      "format": "email"
+                    },
+                    "password": {
+                      "type": "string",
+                      "format": "password"
+                    }
+                  },
+                  "required": ["email", "password"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "User created"
+            },
+            "400": {
+              "description": "Invalid request"
+            }
+          }
+        }
+      },
+      "/users/{userId}": {
+        "get": {
+          "summary": "Get a user",
+          "operationId": "getUser",
+          "parameters": [
+            {
+              "name": "userId",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "User retrieved",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "userId": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "User not found"
+            }
+          }
+        },
+        "put": {
+          "summary": "Update a user",
+          "operationId": "updateUser",
+          "parameters": [
+            {
+              "name": "userId",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string",
+                      "format": "email"
+                    },
+                    "password": {
+                      "type": "string",
+                      "format": "password"
+                    }
+                  },
+                  "required": ["email", "password"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "User updated"
+            },
+            "400": {
+              "description": "Invalid request"
+            },
+            "404": {
+              "description": "User not found"
+            }
+          }
+        }
+      },
+      "/questions": {
+        "post": {
+          "summary": "Add a question with options",
+          "operationId": "addQuestion",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "userId": {
+                      "type": "string"
+                    },
+                    "questionText": {
+                      "type": "string"
+                    },
+                    "options": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": ["userId", "questionText", "options"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Question added"
+            },
+            "400": {
+              "description": "Invalid request"
+            }
+          }
+        }
+      },
+      "/questions/{questionId}": {
+        "get": {
+          "summary": "Get a question with options",
+          "operationId": "getQuestion",
+          "parameters": [
+            {
+              "name": "questionId",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Question retrieved",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "questionId": {
+                        "type": "string"
+                      },
+                      "userId": {
+                        "type": "string"
+                      },
+                      "questionText": {
+                        "type": "string"
+                      },
+                      "options": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Question not found"
+            }
+          }
+        },
+        "put": {
+          "summary": "Edit a question and update options",
+          "operationId": "editQuestion",
+          "parameters": [
+            {
+              "name": "questionId",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "questionText": {
+                      "type": "string"
+                    },
+                    "options": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Question updated"
+            },
+            "400": {
+              "description": "Invalid request"
+            },
+            "404": {
+              "description": "Question not found"
+            }
+          }
+        }
+      },
+      "/responses": {
+        "post": {
+          "summary": "Add a response to a question",
+          "operationId": "addResponse",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "questionId": {
+                      "type": "string"
+                    },
+                    "userId": {
+                      "type": "string"
+                    },
+                    "response": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["questionId", "userId", "response"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Response added"
+            },
+            "400": {
+              "description": "Invalid request"
+            }
+          }
+        }
+      },
+      "/responses/{questionId}": {
+        "get": {
+          "summary": "Get responses for a question within a date range",
+          "operationId": "getResponses",
+          "parameters": [
+            {
+              "name": "questionId",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "startDate",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "format": "date"
+              }
+            },
+            {
+              "name": "endDate",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "format": "date"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Responses retrieved",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "responseId": {
+                          "type": "string"
+                        },
+                        "questionId": {
+                          "type": "string"
+                        },
+                        "userId": {
+                          "type": "string"
+                        },
+                        "response": {
+                          "type": "string"
+                        },
+                        "responseDate": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "No responses found for this question within the date range"
+            },
+            "400": {
+              "description": "Invalid request"
+            }
+          }
+        }
+      }
+    }
+  }
+  
